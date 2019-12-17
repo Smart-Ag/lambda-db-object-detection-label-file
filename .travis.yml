@@ -1,0 +1,32 @@
+sudo: required
+services:
+  - docker
+
+language: python
+python:
+  - "3.6"
+
+# we'll handle submodules ourselves using INSTALL environment variable
+git:
+  submodules: true
+
+notifications:
+  email: false
+
+before_install:
+  - cp .netrc ~/.netrc
+  - pip install --upgrade pip flake8
+
+before_script:
+  # autopep8 --max-line-length=100 -i -a -a -a
+  - flake8 --max-line-length=100 update tests
+  - sudo ./delete_caches.sh
+  - docker build . --no-cache -t python-lambda36
+  - docker-compose up
+
+script:
+  - sudo ./delete_caches.sh
+  - docker build . --no-cache -t python-lambda36 || travis_terminate 1
+  - bash make-package.sh || travis_terminate 1
+  # TRAVIS_BRANCH='prod' TRAVIS_PULL_REQUEST='false' SKIP_PROMPT=y bash upload-lambda.sh
+  - SKIP_PROMPT=y bash upload-lambda.sh  || travis_terminate 1
