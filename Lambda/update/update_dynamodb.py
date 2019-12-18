@@ -2,8 +2,6 @@ import boto3
 import urllib
 import os
 import update.helpers as helpers
-import datetime
-now = datetime.datetime.now()
 
 boto3.setup_default_session(region_name='us-east-1')
 s3 = boto3.resource('s3')
@@ -12,14 +10,15 @@ dynamodb = boto3.resource('dynamodb')
 
 def lambda_handler(event, context):
     # print("Received event: " + json.dumps(event, indent=2))
-    ANNO_TABLE_NAME = str(now.year) + '_object_detection_label_file'
-    ANNO_ITEM_TABLE_NAME = str(now.year) + '_object_detection_label_file_item'
 
     # Get the object from the event and show its content type
     bucket = event['Records'][0]['s3']['bucket']['name']
     key = urllib.parse.unquote_plus(
         event['Records'][0]['s3']['object']['key'], encoding='utf-8')
     try:
+        op_year = str(key.split('/')[0])
+        ANNO_TABLE_NAME = op_year + '_object_detection_label_file'
+        ANNO_ITEM_TABLE_NAME = op_year + '_object_detection_label_file_item'
         anno_tbl = dynamodb.Table(ANNO_TABLE_NAME)
         anno_item_tbl = dynamodb.Table(ANNO_ITEM_TABLE_NAME)
 
