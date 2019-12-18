@@ -1,6 +1,4 @@
 import xmltodict
-import json
-import boto3
 import time
 import uuid
 import datetime
@@ -8,7 +6,6 @@ now = datetime.datetime.now()
 
 
 def label_files_to_dynamo(full_file_path, xml_data, tbl_anno, tbl_lbl):
-    count = 0
     with tbl_anno.batch_writer() as anno_batch:
         json_data = xmltodict.parse(xml_data)
 
@@ -21,9 +18,8 @@ def label_files_to_dynamo(full_file_path, xml_data, tbl_anno, tbl_lbl):
         elif not isinstance(json_data["annotation"]["object"], list):
             json_data["annotation"]["object"] = [json_data["annotation"]["object"]]
 
-
         anno = {
-            #"id": str(uuid.uuid4()),
+            # "id": str(uuid.uuid4()),
             "app": "autocart",
             "image_name": str(json_data['annotation']['filename']),
             "anno_name": json_data["file_name"],

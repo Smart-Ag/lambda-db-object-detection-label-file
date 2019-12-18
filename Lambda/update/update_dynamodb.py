@@ -1,5 +1,3 @@
-import json
-import base64
 import boto3
 import urllib
 import os
@@ -13,10 +11,9 @@ dynamodb = boto3.resource('dynamodb')
 
 
 def lambda_handler(event, context):
-    #print("Received event: " + json.dumps(event, indent=2))
+    # print("Received event: " + json.dumps(event, indent=2))
     ANNO_TABLE_NAME = str(now.year) + '_object_detection_label_file'
     ANNO_ITEM_TABLE_NAME = str(now.year) + '_object_detection_label_file_item'
-
 
     # Get the object from the event and show its content type
     bucket = event['Records'][0]['s3']['bucket']['name']
@@ -29,14 +26,19 @@ def lambda_handler(event, context):
         full_file_path = os.path.join(bucket, key)
         response = s3.Object(bucket, key).get()
 
-        #print("response: ", response)
+        # print("response: ", response)
 
         xml_data = response['Body'].read()
-        
+
         helpers.label_files_to_dynamo(full_file_path, xml_data, anno_tbl, anno_item_tbl)
 
         return response['ContentType']
     except Exception as e:
         print(e)
-        print('Error getting object {} from bucket {}. Make sure they exist and your bucket is in the same region as this function.'.format(key, bucket))
+        print(
+            'Error getting object {} from bucket {}. \
+                Make sure they exist and your bucket is in the same region as this function.'
+            .format(
+                key,
+                bucket))
         raise e
