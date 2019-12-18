@@ -4,6 +4,8 @@ import boto3
 import urllib
 import os
 import update.helpers as helpers
+import datetime
+now = datetime.datetime.now()
 
 boto3.setup_default_session(region_name='us-east-1')
 s3 = boto3.resource('s3')
@@ -18,13 +20,13 @@ def lambda_handler(event, context):
     key = urllib.parse.unquote_plus(
         event['Records'][0]['s3']['object']['key'], encoding='utf-8')
     try:
-        anno_tbl = dynamodb.Table('object_detection_label_file')
-        anno_item_tbl = dynamodb.Table('object_detection_label_file_item')
+        anno_tbl = dynamodb.Table(str(now.year) + '_object_detection_label_file')
+        anno_item_tbl = dynamodb.Table(str(now.year) + '_object_detection_label_file_item')
 
         full_file_path = os.path.join(bucket, key)
         response = s3.Object(bucket, key).get()
 
-        print("response: ", response)
+        #print("response: ", response)
 
         xml_data = response['Body'].read()
         
