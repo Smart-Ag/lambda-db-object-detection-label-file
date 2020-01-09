@@ -1,0 +1,4 @@
+id,anno_name,last_updated_time,name,pose,occluded,truncated,obstacle,difficult,bndbox.xmin,bndbox.ymin,bndbox.xmax,bndbox.ymax
+foo,item.csv,1578598487.738626,Standing crop,Unspecified,1,0,0,0,933.8970322865,97.183260320093,1043.6544425164,118.49537881134
+bar,item.csv,1578598487.738626,QRCode,Unspecified,0,0,0,0,577.24145507812,605.31701660156,611.68884277344,632.39703369141
+baz,item.csv,1578598487.738626,Combine,Unspecified,0,0,1,0,1009.3419317455,94.838927286055,1105.0333437712,132.56137701557
