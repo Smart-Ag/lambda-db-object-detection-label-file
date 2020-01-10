@@ -1,7 +1,5 @@
 import update.helpers as helpers
-import update.update_s3_db as update_s3_db
-from unittest.mock import MagicMock
-from unittest.mock import patch
+import update.update_s3_db_img_index as update_s3_db_img_index
 from moto import mock_s3
 import boto3
 
@@ -28,14 +26,14 @@ FAKE_EVENT = {
                 's3SchemaVersion': '1.0',
                 'configurationId': '09d9246c-9af4-48b6-bfd2-3b23f4927352',
                     'bucket': {
-                        'name': 'object-detection-models-training-data-dot',
+                        'name': 'object-detection-data-collection',
                         'ownerIdentity': {
                             'principalId': 'ABW75M62BD9NV'
                         },
-                        'arn': 'arn:aws:s3:::object-detection-models-training-data-dot'
+                        'arn': 'arn:aws:s3:::object-detection-data-collection'
                     },
                 'object': {
-                        'key': '2019/7-29/0242ac120002-detection-1564068022219-1.jpeg.xml',
+                        'key': '2019/7-29/0242ac120002-detection-1564068022219-1.jpeg',
                         'size': 2238,
                         'eTag': '2a590649e2ec566abc12c957c3e896d5',
                         'sequencer': '005E17901D102EE642'
@@ -50,29 +48,36 @@ FAKE_EVENT = {
 def test_lambda_handler():
 
     TEMP_ANNO_PATH = \
-        '/io/Lambda/tests/unit_tests/test_data/0242ac120002-detection-1564068022219-1.jpeg.xml'
-    BUCKET_NAME = 'object-detection-models-training-data-dot'
-    SRC_KEY = '2019/7-29/0242ac120002-detection-1564068022219-1.jpeg.xml'
+        '/io/Lambda/tests/unit_tests/test_data/0242ac120002-detection-1564068022219-1.jpeg'
+    BUCKET_NAME = 'object-detection-data-collection'
+    SRC_KEY = '2019/7-29/0242ac120002-detection-1564068022219-1.jpeg'
 
+    s3 = boto3.resource('s3')
     s3_client = boto3.client('s3')
     s3_client.create_bucket(Bucket=BUCKET_NAME)
     helpers.upload_to_s3(TEMP_ANNO_PATH, BUCKET_NAME, SRC_KEY)
 
-    with patch('update.update_s3_db.uuid') as mock_uuid:
-        mock_uuid.uuid4 = MagicMock()
-        mock_uuid.uuid4.side_effect = [1, 2]
+    IMG_INDEX_FILE_KEY = f'database/object_detection_img_file_2019/' + \
+        '0242ac120002-detection-1564068022219-1.jpeg.csv'
 
-        ANNO_FILE_KEY = f'database/object_detection_label_file_item_2019/' + \
-            '0242ac120002-detection-1564068022219-1.jpeg.xml.csv'
-        LBL_FILE_KEY = 'database/object_detection_label_file_2019/' + \
-            '0242ac120002-detection-1564068022219-1.jpeg.xml.csv'
-        assert not helpers.file_exists_s3(
-            BUCKET_NAME,
-            ANNO_FILE_KEY)
-        update_s3_db.lambda_handler(FAKE_EVENT, None)
-        assert helpers.file_exists_s3(
-            BUCKET_NAME,
-            ANNO_FILE_KEY)
-        assert helpers.file_exists_s3(
-            BUCKET_NAME,
-            LBL_FILE_KEY)
+    assert not helpers.file_exists_s3(
+        BUCKET_NAME,
+        IMG_INDEX_FILE_KEY)
+
+    update_s3_db_img_index.lambda_handler(FAKE_EVENT, None)
+
+    assert helpers.file_exists_s3(
+        BUCKET_NAME,
+        IMG_INDEX_FILE_KEY)
+
+    img_index_response = s3.Object(BUCKET_NAME, IMG_INDEX_FILE_KEY).get()
+    img_index_data = img_index_response['Body'].read().decode('ascii')
+    # print(img_index_data)
+
+    with open('/io/Lambda/tests/unit_tests/test_data/EXP_IMG_INDEX_1.csv', 'r') as f:
+        expected_img_index = f.read().strip('\r').strip('\n')
+
+    for a, b in zip(img_index_data.split("\n"), expected_img_index.split("\n")):
+        # print("a: ", a)
+        # print("b: ", b)
+        assert a.strip('\r') == b.strip('\r')

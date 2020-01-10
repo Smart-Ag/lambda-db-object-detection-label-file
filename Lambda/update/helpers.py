@@ -1,7 +1,6 @@
 import xmltodict
 import time
 import uuid
-import datetime
 import csv
 import boto3
 import os
@@ -11,11 +10,12 @@ def file_exists_s3(bucket_name, object_key):
     s3 = boto3.client('s3')
     try:
         s3.head_object(Bucket=bucket_name, Key=object_key)
-    except:
+    except BaseException:
         # Not found
         return False
 
     return True
+
 
 def upload_to_s3(source_file, bucket_name, object_key):
     s3 = boto3.resource('s3')
@@ -92,7 +92,6 @@ def label_files_to_csv(dest_bucket,
             }
             lbls.append(lbl)
 
-
     with open(TEMP_ANNO_PATH, 'w') as f:
         writer = csv.writer(f)
         writer.writerow(anno.keys())
@@ -113,7 +112,8 @@ def label_files_to_csv(dest_bucket,
 
     print("done")
 
-def label_files_to_dynamo(full_file_path, xml_data, tbl_anno, tbl_lbl):
+
+def label_files_to_dynamo(full_file_path, xml_data, tbl_anno, tbl_lbl, op_year):
     with tbl_anno.batch_writer() as anno_batch:
         json_data = xmltodict.parse(xml_data)
 

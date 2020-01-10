@@ -1,13 +1,14 @@
 import update.helpers as helpers
 import boto3
 from moto import mock_s3
-import csv
 from unittest.mock import patch
 from unittest.mock import MagicMock
+
 
 def create_bucket(bucket_name):
     s3_client = boto3.client('s3')
     s3_client.create_bucket(Bucket=bucket_name)
+
 
 def test_label_files_to_dynamo():
 
@@ -18,10 +19,11 @@ def test_label_files_to_dynamo():
 def test_label_files_to_s3():
 
     s3 = boto3.resource('s3')
-    
-    full_file_path = 'full_path'
 
-    with open('/io/Lambda/tests/unit_tests/test_data/0242ac120002-detection-1564068022219-1.jpeg.xml', 'r') as content_file:
+    with open(
+        '/io/Lambda/tests/unit_tests/test_data/0242ac120002-detection-1564068022219-1.jpeg.xml',
+        'r'
+    ) as content_file:
         xml_data = content_file.read()
 
     dest_bucket = "test-bucket"
@@ -60,7 +62,6 @@ def test_label_files_to_s3():
 
             with open('/io/Lambda/tests/unit_tests/test_data/EXP_LBL_1.csv', 'r') as f:
                 expected_lbl = f.read().strip('\r').strip('\n')
-
 
             assert helpers.file_exists_s3(dest_bucket, dest_path_key_lbl)
             lbl_response = s3.Object(dest_bucket, dest_path_key_lbl).get()

@@ -19,7 +19,7 @@ before_install:
 
 before_script:
   # autopep8 --max-line-length=100 -i -a -a -a
-  - flake8 --max-line-length=100 update tests
+  - flake8 --max-line-length=100 ./Lambda/update ./Lambda/tests
   - sudo ./delete_caches.sh
   - docker build . --no-cache -t python-lambda36
   - docker-compose up
