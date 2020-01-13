@@ -58,21 +58,17 @@ def test_lambda_handler():
     s3_client.create_bucket(Bucket=BUCKET_NAME)
     helpers.upload_to_s3(TEMP_ANNO_PATH, BUCKET_NAME, SRC_KEY)
 
-    with patch('update.update_s3_db.uuid') as mock_uuid:
-        mock_uuid.uuid4 = MagicMock()
-        mock_uuid.uuid4.side_effect = [1, 2]
-
-        ANNO_FILE_KEY = f'database/object_detection_label_file_item_2019/' + \
-            '0242ac120002-detection-1564068022219-1.jpeg.xml.csv'
-        LBL_FILE_KEY = 'database/object_detection_label_file_2019/' + \
-            '0242ac120002-detection-1564068022219-1.jpeg.xml.csv'
-        assert not helpers.file_exists_s3(
-            BUCKET_NAME,
-            ANNO_FILE_KEY)
-        update_s3_db.lambda_handler(FAKE_EVENT, None)
-        assert helpers.file_exists_s3(
-            BUCKET_NAME,
-            ANNO_FILE_KEY)
-        assert helpers.file_exists_s3(
-            BUCKET_NAME,
-            LBL_FILE_KEY)
+    ANNO_FILE_KEY = f'database/object_detection_label_file_item_2019/' + \
+        '0242ac120002-detection-1564068022219-1.jpeg.xml.csv'
+    LBL_FILE_KEY = 'database/object_detection_label_file_2019/' + \
+        '0242ac120002-detection-1564068022219-1.jpeg.xml.csv'
+    assert not helpers.file_exists_s3(
+        BUCKET_NAME,
+        ANNO_FILE_KEY)
+    update_s3_db.lambda_handler(FAKE_EVENT, None)
+    assert helpers.file_exists_s3(
+        BUCKET_NAME,
+        ANNO_FILE_KEY)
+    assert helpers.file_exists_s3(
+        BUCKET_NAME,
+        LBL_FILE_KEY)

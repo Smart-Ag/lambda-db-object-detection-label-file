@@ -1,2 +1,2 @@
-app,operation,image_name,anno_name,full_file_path,last_updated_time,size.width,size.height,size.depth,segmented,unique,year
-dot,seeder,0242ac120002-detection-1564068022219-1.jpeg,item.csv,test-bucket/2019/7/29/database/item.csv,1578598487.738626,1280,800,3,0,1,2019
+app,operation,image_name,anno_name,full_file_path,last_updated_time,size.width,size.height,size.depth,segmented,unique,year,data_version
+smartag,autocart,0242ac120002-detection-1564068022219-1.jpeg,item.csv,test-bucket/2019/7/29/database/item.csv,1578598487.738626,1280,800,3,0,1,2019,2019-0-0

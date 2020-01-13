@@ -3,6 +3,7 @@ import urllib
 import os
 import update.helpers as helpers
 
+DATA_VERSION = "2020.3.0"
 
 def lambda_handler(event, context):
 
@@ -35,11 +36,7 @@ def lambda_handler(event, context):
         response = s3.Object(src_bucket, src_path_key).get()
         xml_data = response['Body'].read()
 
-        product = "smartag"
-        operation = "autocart"
-        if "dot" in src_bucket:
-            product = "dot"
-            operation = "seeder"
+        meta_data = helpers.get_meta_data(og_filename)
 
         helpers.label_files_to_csv(
             dest_bucket,
@@ -47,8 +44,7 @@ def lambda_handler(event, context):
             dest_path_key_anno,
             src_full_file_path,
             xml_data,
-            product,
-            operation,
+            meta_data,
             op_year)
 
         return response['ContentType']

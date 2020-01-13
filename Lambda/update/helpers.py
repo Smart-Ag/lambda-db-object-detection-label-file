@@ -5,6 +5,35 @@ import csv
 import boto3
 import os
 
+def get_meta_data(file_name):
+    #v2020-3-0-nodetection-hazard-left-112-smartag-autocart-1578090779813.jpeg
+
+    meta = {
+        "version": "2019-0-0",
+        "det_type": "n/a",
+        "cam_func": "n/a",
+        "cam_pos": "n/a",
+        "cam_fov": "n/a",
+        "product": "smartag",
+        "op": "autocart"
+    }
+
+    if file_name.startswith("v2020-3-0"):
+        file_name_split = file_name.split('-')
+
+        meta["version"] = file_name_split[0][1:] +\
+            "-" + file_name_split[1] +\
+            "-" + file_name_split[2]
+        meta["det_type"] = file_name_split[3]
+        meta["cam_func"] = file_name_split[4]
+        meta["cam_pos"] = file_name_split[5]
+        meta["cam_fov"] = file_name_split[6]
+        meta["product"] = file_name_split[7]
+        meta["op"] = file_name_split[8]
+
+
+
+    return meta
 
 def file_exists_s3(bucket_name, object_key):
     s3 = boto3.client('s3')
@@ -35,12 +64,15 @@ def label_files_to_csv(dest_bucket,
                        dest_path_key_anno,
                        src_full_file_path,
                        xml_data,
-                       product,
-                       operation,
+                       meta_data,
                        op_year):
 
     TEMP_LBL_PATH = '/tmp/output-lbls.csv'
     TEMP_ANNO_PATH = '/tmp/output-annos.csv'
+
+    product = meta_data["product"]
+    operation = meta_data["op"]
+    data_version = meta_data["version"]
 
     json_data = xmltodict.parse(xml_data)
 
@@ -55,7 +87,6 @@ def label_files_to_csv(dest_bucket,
             json_data["annotation"]["object"]]
 
     anno = {
-        # "id": str(uuid.uuid4()),
         "app": product,
         "operation": operation,
         "image_name": str(json_data['annotation']['filename']),
@@ -67,7 +98,8 @@ def label_files_to_csv(dest_bucket,
         "size.depth": json_data['annotation']['size']['depth'],
         "segmented": "0",
         "unique": "1",
-        "year": str(op_year)
+        "year": str(op_year),
+        "data_version": str(data_version)
     }
 
     lbls = []
@@ -127,7 +159,6 @@ def label_files_to_dynamo(full_file_path, xml_data, tbl_anno, tbl_lbl, op_year):
             json_data["annotation"]["object"] = [json_data["annotation"]["object"]]
 
         anno = {
-            # "id": str(uuid.uuid4()),
             "app": "autocart",
             "image_name": str(json_data['annotation']['filename']),
             "anno_name": json_data["file_name"],
