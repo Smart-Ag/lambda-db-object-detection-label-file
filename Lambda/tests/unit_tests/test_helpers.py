@@ -90,16 +90,19 @@ expected_meta_data_2019_0_0 = {
     "cam_pos": "n/a",
     "cam_fov": "n/a",
     "product": "smartag",
-    "op": "autocart"
+    "op": "autocart",
+    "collection_id": "n/a"
 }
+
 expected_meta_data_2020_3_0 = {
     "version": "2020-3-0",
     "det_type": "nodetection",
-    "cam_func": "hazard",
-    "cam_pos": "left",
-    "cam_fov": "112",
+    "cam_func": "primary",
+    "cam_pos": "forward",
+    "cam_fov": "57",
     "product": "dot",
-    "op": "seeder"
+    "op": "seeder",
+    "collection_id": "4e97fb4008634f6689dd3e4ab130f601"
 }
 
 
@@ -110,7 +113,8 @@ expected_meta_data_2020_3_0 = {
     ),
     (
         expected_meta_data_2020_3_0,
-        "v2020-3-0-nodetection-hazard-left-112-dot-seeder-1578090779813.jpeg"
+        "v2020-3-0-4e97fb4008634f6689dd3e4ab130f601" +
+        "-nodetection-primary-forward-57-dot-seeder-1579025339707.jpeg"
     ),
 ])
 def test_get_meta_data(expected_meta_data, file_name):
