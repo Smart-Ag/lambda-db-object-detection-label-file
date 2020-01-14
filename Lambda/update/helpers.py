@@ -5,8 +5,9 @@ import csv
 import boto3
 import os
 
+
 def get_meta_data(file_name):
-    #v2020-3-0-nodetection-hazard-left-112-smartag-autocart-1578090779813.jpeg
+    # v2020-3-0-nodetection-hazard-left-112-smartag-autocart-1578090779813.jpeg
 
     meta = {
         "version": "2019-0-0",
@@ -31,9 +32,8 @@ def get_meta_data(file_name):
         meta["product"] = file_name_split[7]
         meta["op"] = file_name_split[8]
 
-
-
     return meta
+
 
 def file_exists_s3(bucket_name, object_key):
     s3 = boto3.client('s3')

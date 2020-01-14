@@ -7,6 +7,7 @@ import pytest
 
 DATA_VERSION = "2020.3.0"
 
+
 def create_bucket(bucket_name):
     s3_client = boto3.client('s3')
     s3_client.create_bucket(Bucket=bucket_name)
@@ -82,7 +83,6 @@ def test_label_files_to_s3():
                 assert a.strip('\r') == b.strip('\r')
 
 
-
 expected_meta_data_2019_0_0 = {
     "version": "2019-0-0",
     "det_type": "n/a",
@@ -102,9 +102,16 @@ expected_meta_data_2020_3_0 = {
     "op": "seeder"
 }
 
+
 @pytest.mark.parametrize("expected_meta_data,file_name", [
-    (expected_meta_data_2019_0_0, "0242ac120002-detection-1564068022219-1.jpeg"),
-    (expected_meta_data_2020_3_0, "v2020-3-0-nodetection-hazard-left-112-dot-seeder-1578090779813.jpeg"),
+    (
+        expected_meta_data_2019_0_0,
+        "0242ac120002-detection-1564068022219-1.jpeg"
+    ),
+    (
+        expected_meta_data_2020_3_0,
+        "v2020-3-0-nodetection-hazard-left-112-dot-seeder-1578090779813.jpeg"
+    ),
 ])
 def test_get_meta_data(expected_meta_data, file_name):
     meta = helpers.get_meta_data(file_name)

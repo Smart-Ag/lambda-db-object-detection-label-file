@@ -5,6 +5,7 @@ import update.helpers as helpers
 
 DATA_VERSION = "2020.3.0"
 
+
 def lambda_handler(event, context):
 
     boto3.setup_default_session(region_name='us-east-1')

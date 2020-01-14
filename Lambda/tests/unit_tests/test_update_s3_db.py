@@ -1,7 +1,5 @@
 import update.helpers as helpers
 import update.update_s3_db as update_s3_db
-from unittest.mock import MagicMock
-from unittest.mock import patch
 from moto import mock_s3
 import boto3
 
