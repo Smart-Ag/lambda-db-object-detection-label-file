@@ -7,7 +7,8 @@ import os
 
 
 def get_meta_data(file_name):
-    # v2020-3-0-nodetection-hazard-left-112-smartag-autocart-1578090779813.jpeg
+    # v2019-0-0-4e97fb4008634f6689dd3e4ab130f601
+    # -nodetection-primary-forward-57-smartag-autocart-1579025339707.jpeg
 
     meta = {
         "version": "2019-0-0",
@@ -16,7 +17,8 @@ def get_meta_data(file_name):
         "cam_pos": "n/a",
         "cam_fov": "n/a",
         "product": "smartag",
-        "op": "autocart"
+        "op": "autocart",
+        "collection_id": "n/a"
     }
 
     if file_name.startswith("v2020-3-0"):
@@ -25,12 +27,13 @@ def get_meta_data(file_name):
         meta["version"] = file_name_split[0][1:] +\
             "-" + file_name_split[1] +\
             "-" + file_name_split[2]
-        meta["det_type"] = file_name_split[3]
-        meta["cam_func"] = file_name_split[4]
-        meta["cam_pos"] = file_name_split[5]
-        meta["cam_fov"] = file_name_split[6]
-        meta["product"] = file_name_split[7]
-        meta["op"] = file_name_split[8]
+        meta["collection_id"] = file_name_split[3]
+        meta["det_type"] = file_name_split[4]
+        meta["cam_func"] = file_name_split[5]
+        meta["cam_pos"] = file_name_split[6]
+        meta["cam_fov"] = file_name_split[7]
+        meta["product"] = file_name_split[8]
+        meta["op"] = file_name_split[9]
 
     return meta
 
@@ -99,7 +102,12 @@ def label_files_to_csv(dest_bucket,
         "segmented": "0",
         "unique": "1",
         "year": str(op_year),
-        "data_version": str(data_version)
+        "data_version": str(data_version),
+        "det_type": meta_data["det_type"],
+        "cam_func": meta_data["cam_func"],
+        "cam_pos": meta_data["cam_pos"],
+        "cam_fov": meta_data["cam_fov"],
+        "collection_id": meta_data["collection_id"]
     }
 
     lbls = []
