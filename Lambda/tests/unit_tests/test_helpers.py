@@ -78,8 +78,8 @@ def test_label_files_to_s3():
             anno_response = s3.Object(dest_bucket, dest_path_key_anno).get()
             anno_data = anno_response['Body'].read().decode('ascii')
             for a, b in zip(anno_data.split("\n"), expected_anno.split("\n")):
-                    # print("a: ", a)
-                    # print("b: ", b)
+                # print("a: ", a)
+                # print("b: ", b)
                 assert a.strip('\r') == b.strip('\r')
 
 
