@@ -5,7 +5,7 @@ setup(
     version='1.0.0',
     author='Aziz Alibasic',
     author_email='aziz.alibasic@ravenind.com',
-    url='https://github.com/Smart-Ag/lambda-update-insert_dynamodb-object-detection-label-file',
+    url='https://github.com/Smart-Ag/lambda-db-object-detection-label-file',
     description='Lambda Coverage Merging',
     keywords=['lambda', 'coverage'],
     classifiers=[
