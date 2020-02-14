@@ -20,8 +20,8 @@ def lambda_handler(event, context):
     try:
         og_filename = str(src_path_key.split('/')[-1])
         op_year = str(src_path_key.split('/')[0])
-        dest_path_key_anno = 'object_detection_label_file_' + str(op_year)
-        dest_path_key_lbl = 'object_detection_label_file_item_' + str(op_year)
+        dest_path_key_anno = 'anno/object_detection_label_file_' + str(op_year)
+        dest_path_key_lbl = 'lbl/object_detection_label_file_item_' + str(op_year)
 
         src_full_file_path = os.path.join(src_bucket, src_path_key)
 
@@ -30,9 +30,11 @@ def lambda_handler(event, context):
         dest_path_key_lbl = os.path.join(
             "database",
             dest_path_key_lbl, og_filename + '.csv')
+        print("dest_path_key_lbl:", dest_path_key_lbl)
         dest_path_key_anno = os.path.join(
             "database",
             dest_path_key_anno, og_filename + '.csv')
+        print("dest_path_key_anno:", dest_path_key_anno)
 
         response = s3.Object(src_bucket, src_path_key).get()
         xml_data = response['Body'].read()

@@ -58,7 +58,7 @@ def upload_to_s3(source_file, bucket_name, object_key):
     try:
         s3.Bucket(bucket_name).upload_file(source_file, object_key)
     except Exception as e:
-        print(e)
+        print("upload_to_s3:", e)
         raise e
 
 
