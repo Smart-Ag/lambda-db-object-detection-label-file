@@ -25,10 +25,11 @@ STORED AS INPUTFORMAT
 OUTPUTFORMAT 
   'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
 LOCATION
-  's3://object-detection-models-training-data/database'
+  's3://object-detection-models-training-data/database/anno'
 TBLPROPERTIES (
   'has_encrypted_data'='false', 
-  'transient_lastDdlTime'='1578332910')
+  'transient_lastDdlTime'='1578332910',
+  'skip.header.line.count'='1');
 
 CREATE EXTERNAL TABLE `object_detection_label_file_item_v2`(
   `id` string,
@@ -52,7 +53,9 @@ STORED AS INPUTFORMAT
 OUTPUTFORMAT 
   'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
 LOCATION
-  's3://object-detection-models-training-data/database'
+  's3://object-detection-models-training-data/database/lbl'
 TBLPROPERTIES (
   'has_encrypted_data'='false', 
-  'transient_lastDdlTime'='1578333083')
+  'transient_lastDdlTime'='1578333083',
+  'skip.header.line.count'='1'
+);
