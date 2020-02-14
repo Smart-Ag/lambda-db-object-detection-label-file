@@ -59,3 +59,10 @@ TBLPROPERTIES (
   'transient_lastDdlTime'='1578333083',
   'skip.header.line.count'='1'
 );
+
+
+-- THIS QUERY TO PULL IMAGES
+-- select *
+-- from object_detection_label_file_item_v2 item
+-- inner join object_detection_label_file_v2 anno on anno.anno_name = item.anno_name
+-- where name like '%Camera%'
