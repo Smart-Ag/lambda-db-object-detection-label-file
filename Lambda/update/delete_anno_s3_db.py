@@ -2,6 +2,7 @@ import boto3
 import urllib
 import os
 
+
 def lambda_handler(event, context):
 
     boto3.setup_default_session(region_name='us-east-1')
@@ -17,15 +18,13 @@ def lambda_handler(event, context):
         dest_path_key_anno = 'anno/object_detection_label_file_' + str(op_year)
         dest_path_key_lbl = 'lbl/object_detection_label_file_item_' + str(op_year)
 
-        src_full_file_path = os.path.join(src_bucket, src_path_key)
-
         src_path_key_anno = os.path.join(
             "database",
             dest_path_key_anno, og_filename + '.csv')
 
         print("Deleting anno from: ", src_bucket, '/', src_path_key_anno)
         try:
-            anno_response = s3.Object(src_bucket, src_path_key_anno).delete()
+            s3.Object(src_bucket, src_path_key_anno).delete()
         except Exception as e:
             print("Deleting the annotation db file failed: ", src_bucket, src_path_key_anno)
             print("Error: ", e)
@@ -37,7 +36,7 @@ def lambda_handler(event, context):
 
         print("Deleting lbl from: ", src_bucket, '/', src_path_key_lbl)
         try:
-            lbl_response = s3.Object(src_bucket, src_path_key_lbl).delete()
+            s3.Object(src_bucket, src_path_key_lbl).delete()
         except Exception as e:
             print("Deleting the lbl db file failed: ", src_bucket, src_path_key_lbl)
             print("Error: ", e)

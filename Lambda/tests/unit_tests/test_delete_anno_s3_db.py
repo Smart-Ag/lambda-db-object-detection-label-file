@@ -63,7 +63,7 @@ def test_lambda_handler():
         '0242ac120002-detection-1564068022219-1.jpeg.xml.csv'
     LBL_FILE_KEY = 'database/lbl/object_detection_label_file_item_2019/' + \
         '0242ac120002-detection-1564068022219-1.jpeg.xml.csv'
-    
+
     update_s3_db.lambda_handler(FAKE_EVENT, None)
 
     assert helpers.file_exists_s3(
@@ -73,7 +73,7 @@ def test_lambda_handler():
     assert helpers.file_exists_s3(
         BUCKET_NAME,
         LBL_FILE_KEY)
-    
+
     delete_anno_s3_db.lambda_handler(FAKE_EVENT, None)
 
     assert not helpers.file_exists_s3(

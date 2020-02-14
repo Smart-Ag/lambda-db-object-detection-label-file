@@ -85,6 +85,7 @@ def label_files_to_csv(dest_bucket,
 
     print("done")
 
+
 def anno_lbl_to_csv(TEMP_ANNO_PATH, anno, lbls, TEMP_LBL_PATH, append=False, append_count=0):
     file_mode = "w"
     if append:
@@ -108,6 +109,7 @@ def anno_lbl_to_csv(TEMP_ANNO_PATH, anno, lbls, TEMP_LBL_PATH, append=False, app
                 print("lbl append count:", append_count)
                 writer.writerow(lbls[0].keys())
             writer.writerows(lbl_values)
+
 
 def xml_to_anno_lbls(meta_data, xml_data, src_full_file_path, op_year):
     product = meta_data["product"]
