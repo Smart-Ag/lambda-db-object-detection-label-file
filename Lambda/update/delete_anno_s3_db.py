@@ -1,17 +1,12 @@
 import boto3
 import urllib
 import os
-import update.helpers as helpers
-
-DATA_VERSION = "2020.3.0"
 
 
 def lambda_handler(event, context):
 
     boto3.setup_default_session(region_name='us-east-1')
     s3 = boto3.resource('s3')
-
-    # print("event: ", event)
 
     # Get the object from the event and show its content type
     src_bucket = event['Records'][0]['s3']['bucket']['name']
@@ -23,34 +18,31 @@ def lambda_handler(event, context):
         dest_path_key_anno = 'anno/object_detection_label_file_' + str(op_year)
         dest_path_key_lbl = 'lbl/object_detection_label_file_item_' + str(op_year)
 
-        src_full_file_path = os.path.join(src_bucket, src_path_key)
-
-        dest_bucket = src_bucket[0:]
-
-        dest_path_key_lbl = os.path.join(
-            "database",
-            dest_path_key_lbl, og_filename + '.csv')
-        print("dest_path_key_lbl:", dest_path_key_lbl)
-        dest_path_key_anno = os.path.join(
+        src_path_key_anno = os.path.join(
             "database",
             dest_path_key_anno, og_filename + '.csv')
-        print("dest_path_key_anno:", dest_path_key_anno)
 
-        response = s3.Object(src_bucket, src_path_key).get()
-        xml_data = response['Body'].read()
+        print("Deleting anno from: ", src_bucket, '/', src_path_key_anno)
+        try:
+            s3.Object(src_bucket, src_path_key_anno).delete()
+        except Exception as e:
+            print("Deleting the annotation db file failed: ", src_bucket, src_path_key_anno)
+            print("Error: ", e)
+            raise e
 
-        meta_data = helpers.get_meta_data(og_filename)
+        src_path_key_lbl = os.path.join(
+            "database",
+            dest_path_key_lbl, og_filename + '.csv')
 
-        helpers.label_files_to_csv(
-            dest_bucket,
-            dest_path_key_lbl,
-            dest_path_key_anno,
-            src_full_file_path,
-            xml_data,
-            meta_data,
-            op_year)
+        print("Deleting lbl from: ", src_bucket, '/', src_path_key_lbl)
+        try:
+            s3.Object(src_bucket, src_path_key_lbl).delete()
+        except Exception as e:
+            print("Deleting the lbl db file failed: ", src_bucket, src_path_key_lbl)
+            print("Error: ", e)
+            raise e
 
-        return response['ContentType']
+        return 200
     except Exception as e:
         print(e)
         print(

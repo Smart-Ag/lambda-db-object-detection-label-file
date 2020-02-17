@@ -24,6 +24,14 @@ then
             --s3-key update_insert_s3_object_detection_label_file/update_insert_s3_object_detection_label_file.zip \
             --region us-east-1
         echo Done With Prod Deployment 2
+
+        echo Doing Prod Deployment 3
+        aws lambda update-function-code \
+            --function-name delete_delete_s3_object_detection_label_file \
+            --s3-bucket smart-ag-lambda-code-deploy-us-east-1-v2 \
+            --s3-key update_insert_s3_object_detection_label_file/update_insert_s3_object_detection_label_file.zip \
+            --region us-east-1
+        echo Done With Prod Deployment 3
     else
         echo skipping deploy
         echo TRAVIS_BRANCH is $TRAVIS_BRANCH

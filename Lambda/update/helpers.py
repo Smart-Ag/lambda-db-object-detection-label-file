@@ -58,7 +58,7 @@ def upload_to_s3(source_file, bucket_name, object_key):
     try:
         s3.Bucket(bucket_name).upload_file(source_file, object_key)
     except Exception as e:
-        print(e)
+        print("upload_to_s3:", e)
         raise e
 
 
@@ -73,6 +73,45 @@ def label_files_to_csv(dest_bucket,
     TEMP_LBL_PATH = '/tmp/output-lbls.csv'
     TEMP_ANNO_PATH = '/tmp/output-annos.csv'
 
+    anno, lbls = xml_to_anno_lbls(meta_data, xml_data, src_full_file_path, op_year)
+
+    anno_lbl_to_csv(TEMP_ANNO_PATH, anno, lbls, TEMP_LBL_PATH)
+
+    # Push files to s3
+    print("Pushing annotation to: ", os.path.join(dest_bucket, dest_path_key_anno))
+    upload_to_s3(TEMP_ANNO_PATH, dest_bucket, dest_path_key_anno)
+    print("Pushing label to: ", os.path.join(dest_bucket, dest_path_key_lbl))
+    upload_to_s3(TEMP_LBL_PATH, dest_bucket, dest_path_key_lbl)
+
+    print("done")
+
+
+def anno_lbl_to_csv(TEMP_ANNO_PATH, anno, lbls, TEMP_LBL_PATH, append=False, append_count=0):
+    file_mode = "w"
+    if append:
+        file_mode = "a+"
+
+    annos_existed = os.path.exists(TEMP_ANNO_PATH)
+    lbls_existed = os.path.exists(TEMP_LBL_PATH)
+
+    with open(TEMP_ANNO_PATH, file_mode) as f:
+        writer = csv.writer(f)
+        if append_count == 0 or not annos_existed:
+            print("Anno append count:", append_count)
+            writer.writerow(anno.keys())
+        writer.writerows([anno.values()])
+
+    if len(lbls) > 0:
+        with open(TEMP_LBL_PATH, file_mode) as f:
+            writer = csv.writer(f)
+            lbl_values = [lbl.values() for lbl in lbls]
+            if append_count == 0 or not lbls_existed:
+                print("lbl append count:", append_count)
+                writer.writerow(lbls[0].keys())
+            writer.writerows(lbl_values)
+
+
+def xml_to_anno_lbls(meta_data, xml_data, src_full_file_path, op_year):
     product = meta_data["product"]
     operation = meta_data["op"]
     data_version = meta_data["version"]
@@ -132,25 +171,7 @@ def label_files_to_csv(dest_bucket,
             }
             lbls.append(lbl)
 
-    with open(TEMP_ANNO_PATH, 'w') as f:
-        writer = csv.writer(f)
-        writer.writerow(anno.keys())
-        writer.writerows([anno.values()])
-
-    if len(lbls) > 0:
-        with open(TEMP_LBL_PATH, 'w') as f:
-            writer = csv.writer(f)
-            lbl_values = [lbl.values() for lbl in lbls]
-            writer.writerow(lbls[0].keys())
-            writer.writerows(lbl_values)
-
-    # Push files to s3
-    print("Pushing annotation to: ", os.path.join(dest_bucket, dest_path_key_anno))
-    upload_to_s3(TEMP_ANNO_PATH, dest_bucket, dest_path_key_anno)
-    print("Pushing label to: ", os.path.join(dest_bucket, dest_path_key_lbl))
-    upload_to_s3(TEMP_LBL_PATH, dest_bucket, dest_path_key_lbl)
-
-    print("done")
+    return anno, lbls
 
 
 def label_files_to_dynamo(full_file_path, xml_data, tbl_anno, tbl_lbl, op_year):

@@ -6,4 +6,5 @@ services:
     command: /bin/bash -c "/bin/bash /io/make-package-testing.sh && pytest -s -v /io/Lambda/tests/"
     volumes:
       - .:/io
+      - /Users/azizalibasic/Desktop/data/re_import/:/AZIZ_DATA/
       #- /Users/azizalibasic/Documents/dev/s3_coverage_maps/maps_v2/temp/:/Users/azizalibasic/Documents/dev/s3_coverage_maps/maps_v2/temp/

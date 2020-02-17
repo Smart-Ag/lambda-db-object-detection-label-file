@@ -1,7 +1,9 @@
 import update.helpers as helpers
 import update.update_s3_db as update_s3_db
+import update.delete_anno_s3_db as delete_anno_s3_db
 from moto import mock_s3
 import boto3
+
 
 FAKE_EVENT = {
     'Records': [
@@ -10,7 +12,7 @@ FAKE_EVENT = {
             'eventSource': 'aws:s3',
             'awsRegion': 'us-east-1',
             'eventTime': '2020-01-09T20:42:04.409Z',
-            'eventName': 'ObjectCreated:Put',
+            'eventName': 'ObjectRemoved:Delete',
             'userIdentity': {
                 'principalId': 'AWS:AIDAIXJEL4KSSZMBBE5FI'
             },
@@ -32,6 +34,7 @@ FAKE_EVENT = {
                         },
                         'arn': 'arn:aws:s3:::object-detection-models-training-data-dot'
                     },
+                # Don't use this for the delete, it will not be there in prod.
                 'object': {
                         'key': '2019/7-29/0242ac120002-detection-1564068022219-1.jpeg.xml',
                         'size': 2238,
@@ -60,13 +63,22 @@ def test_lambda_handler():
         '0242ac120002-detection-1564068022219-1.jpeg.xml.csv'
     LBL_FILE_KEY = 'database/lbl/object_detection_label_file_item_2019/' + \
         '0242ac120002-detection-1564068022219-1.jpeg.xml.csv'
+
+    update_s3_db.lambda_handler(FAKE_EVENT, None)
+
+    assert helpers.file_exists_s3(
+        BUCKET_NAME,
+        ANNO_FILE_KEY)
+
+    assert helpers.file_exists_s3(
+        BUCKET_NAME,
+        LBL_FILE_KEY)
+
+    delete_anno_s3_db.lambda_handler(FAKE_EVENT, None)
+
     assert not helpers.file_exists_s3(
         BUCKET_NAME,
         ANNO_FILE_KEY)
-    update_s3_db.lambda_handler(FAKE_EVENT, None)
-    assert helpers.file_exists_s3(
-        BUCKET_NAME,
-        ANNO_FILE_KEY)
-    assert helpers.file_exists_s3(
+    assert not helpers.file_exists_s3(
         BUCKET_NAME,
         LBL_FILE_KEY)
