@@ -15,7 +15,7 @@ notifications:
 
 before_install:
   - cp .netrc ~/.netrc
-  - pip install --upgrade pip flake8
+  - pip install --upgrade pip flake8==3.5.0
 
 before_script:
   # autopep8 --max-line-length=100 -i -a -a -a
