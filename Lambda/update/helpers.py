@@ -160,7 +160,7 @@ def xml_to_anno_lbls(meta_data, xml_data, src_full_file_path, op_year):
                 "last_updated_time": str(json_data["last_updated_time"]),
                 "name": lb_class["name"],
                 "pose": lb_class["pose"],
-                "occluded": lb_class["occluded"],
+                "occluded": lb_class.get("occluded", 'n/a'),
                 "truncated": lb_class["truncated"],
                 "obstacle": is_obstical,
                 "difficult": lb_class["difficult"],
