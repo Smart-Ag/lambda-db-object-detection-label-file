@@ -11,5 +11,5 @@
 #     # pass
 #     update_s3_db_batch.create_anno_db_entries(
 #         'object-detection-models-training-data',
-#         key="AKIAV52IIQF223OU4KRG",
-#         secret='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')
+#         key=""/,
+#         secret='/')
