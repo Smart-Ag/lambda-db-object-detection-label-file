@@ -5,6 +5,7 @@ import csv
 import boto3
 import os
 
+
 def create_db_entry(op_year, src_bucket, src_path_key, og_filename, s3):
     dest_path_key_lbl, dest_path_key_anno = get_anno_lbl_db_path(og_filename, op_year)
 
@@ -29,6 +30,7 @@ def create_db_entry(op_year, src_bucket, src_path_key, og_filename, s3):
 
     return response
 
+
 def get_anno_lbl_db_path(og_filename, op_year, log=True):
     dest_path_key_anno = 'anno/object_detection_label_file_' + str(op_year)
     dest_path_key_lbl = 'lbl/object_detection_label_file_item_' + str(op_year)
@@ -36,12 +38,15 @@ def get_anno_lbl_db_path(og_filename, op_year, log=True):
     dest_path_key_lbl = os.path.join(
         "database",
         dest_path_key_lbl, og_filename + '.csv')
-    if log: print("dest_path_key_lbl:", dest_path_key_lbl)
+    if log:
+        print("dest_path_key_lbl:", dest_path_key_lbl)
     dest_path_key_anno = os.path.join(
         "database",
         dest_path_key_anno, og_filename + '.csv')
-    if log: print("dest_path_key_anno:", dest_path_key_anno)
+    if log:
+        print("dest_path_key_anno:", dest_path_key_anno)
     return dest_path_key_lbl, dest_path_key_anno
+
 
 def get_meta_data(file_name):
     # v2019-0-0-4e97fb4008634f6689dd3e4ab130f601
@@ -77,7 +82,7 @@ def get_meta_data(file_name):
 
 def file_exists_s3(bucket_name, object_key):
     s3 = boto3.client('s3')
-    
+
     return file_exists_s3_on_prem(s3, bucket_name, object_key)
 
 
@@ -102,11 +107,11 @@ def upload_to_s3(source_file, bucket_name, object_key):
     except Exception as e:
 
         print('[Error]: uploading source file={0} to s3 bucket={1}, object={2}:'
-        .format(
-            source_file,
-            bucket_name,
-            object_key
-        ))
+              .format(
+                  source_file,
+                  bucket_name,
+                  object_key
+              ))
         print("upload_to_s3:", e)
         raise e
 
