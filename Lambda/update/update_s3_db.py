@@ -15,7 +15,7 @@ def lambda_handler(event, context):
         src_bucket = event['Records'][0]['s3']['bucket']['name']
         src_path_key = urllib.parse.unquote_plus(
             event['Records'][0]['s3']['object']['key'], encoding='utf-8')
-                    
+
         og_filename = str(src_path_key.split('/')[-1])
         op_year = str(src_path_key.split('/')[0])
         response = helpers.create_db_entry(op_year, src_bucket, src_path_key, og_filename, s3)
