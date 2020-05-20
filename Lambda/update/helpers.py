@@ -5,6 +5,43 @@ import csv
 import boto3
 import os
 
+def create_db_entry(op_year, src_bucket, src_path_key, og_filename, s3):
+    dest_path_key_lbl, dest_path_key_anno = get_anno_lbl_db_path(og_filename, op_year)
+
+    src_full_file_path = os.path.join(src_bucket, src_path_key)
+
+    dest_bucket = src_bucket[0:]
+
+    print("About to read bucket=", src_bucket, "key=", src_path_key)
+    response = s3.Object(src_bucket, src_path_key).get()
+    xml_data = response['Body'].read()
+
+    meta_data = get_meta_data(og_filename)
+
+    label_files_to_csv(
+        dest_bucket,
+        dest_path_key_lbl,
+        dest_path_key_anno,
+        src_full_file_path,
+        xml_data,
+        meta_data,
+        op_year)
+
+    return response
+
+def get_anno_lbl_db_path(og_filename, op_year, log=True):
+    dest_path_key_anno = 'anno/object_detection_label_file_' + str(op_year)
+    dest_path_key_lbl = 'lbl/object_detection_label_file_item_' + str(op_year)
+
+    dest_path_key_lbl = os.path.join(
+        "database",
+        dest_path_key_lbl, og_filename + '.csv')
+    if log: print("dest_path_key_lbl:", dest_path_key_lbl)
+    dest_path_key_anno = os.path.join(
+        "database",
+        dest_path_key_anno, og_filename + '.csv')
+    if log: print("dest_path_key_anno:", dest_path_key_anno)
+    return dest_path_key_lbl, dest_path_key_anno
 
 def get_meta_data(file_name):
     # v2019-0-0-4e97fb4008634f6689dd3e4ab130f601
@@ -40,6 +77,11 @@ def get_meta_data(file_name):
 
 def file_exists_s3(bucket_name, object_key):
     s3 = boto3.client('s3')
+    
+    return file_exists_s3_on_prem(s3, bucket_name, object_key)
+
+
+def file_exists_s3_on_prem(s3, bucket_name, object_key):
     try:
         s3.head_object(Bucket=bucket_name, Key=object_key)
     except BaseException:
@@ -58,6 +100,13 @@ def upload_to_s3(source_file, bucket_name, object_key):
     try:
         s3.Bucket(bucket_name).upload_file(source_file, object_key)
     except Exception as e:
+
+        print('[Error]: uploading source file={0} to s3 bucket={1}, object={2}:'
+        .format(
+            source_file,
+            bucket_name,
+            object_key
+        ))
         print("upload_to_s3:", e)
         raise e
 
