@@ -107,6 +107,8 @@ def create_anno_db_entries(bucket_name, key="", secret=""):
         os.makedirs('logs')
     if not os.path.exists('logs/missing'):
         os.makedirs('logs/missing')
+    if not os.path.exists('logs/formaterror'):
+        os.makedirs('logs/formaterror')
 
     num_files_missing = 0
     years = get_top_level_folders_bucket(s3, bucket_name, only_year=True)
@@ -126,6 +128,13 @@ def create_anno_db_entries(bucket_name, key="", secret=""):
                 try:
                     xml_path_split = xml_key.split('/')
                     og_filename = xml_path_split[-1]
+                    if not og_filename.endswith('.xml'):
+                        msg = "Found invalid anno xml_key={0}".format(
+                            xml_key)
+                        fn = str(uuid.uuid4()) + '.txt'
+                        with open("logs/formaterror/"+fn, "w+") as myfile:
+                            myfile.write(msg + "\n")
+                            continue
 
                     dest_path_key_lbl, dest_path_key_anno = helpers.get_anno_lbl_db_path(
                         og_filename,
