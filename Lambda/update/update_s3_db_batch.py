@@ -1,6 +1,7 @@
 import boto3
 import sys
 import os
+import uuid
 import update.helpers as helpers
 
 
@@ -102,6 +103,11 @@ def create_anno_db_entries(bucket_name, key="", secret=""):
         aws_access_key_id=key,
         aws_secret_access_key=secret)
 
+    if not os.path.exists('logs'):
+        os.makedirs('logs')
+    if not os.path.exists('logs/missing'):
+        os.makedirs('logs/missing')
+
     num_files_missing = 0
     years = get_top_level_folders_bucket(s3, bucket_name, only_year=True)
     for year in years:
@@ -133,9 +139,14 @@ def create_anno_db_entries(bucket_name, key="", secret=""):
                     if not db_anno_exists:
                         print('\n\n--------------------------------------------------')
                         num_files_missing += 1
-                        print("Found missing anno xml_key={0}, db_addr={1}".format(
-                            xml_key, dest_path_key_anno))
+                        ann_msg = "Found missing anno xml_key={0}, db_addr={1}".format(
+                            xml_key, dest_path_key_anno)
+                        print(ann_msg)
                         print("num_files_missing=", num_files_missing)
+
+                        fn = str(uuid.uuid4()) + '.txt'
+                        with open("logs/missing/"+fn, "w+") as myfile:
+                            myfile.write(ann_msg + "\n")
 
                         helpers.create_db_entry(
                             op_year=year,
@@ -145,6 +156,12 @@ def create_anno_db_entries(bucket_name, key="", secret=""):
                             s3=s3_alt)
                         print('--------------------------------------------------\n\n')
                 except Exception as e:
+
+                    fn = str(uuid.uuid4()) + '.txt'
+                    with open("logs/"+fn, "w+") as myfile:
+                        myfile.write("[xml_key failed xml_key]:" + str(xml_key) + "\n")
+                        myfile.write("Failed with:" + str(e) + "\n")
+
                     print("Failed with:", e)
                     print("[xml_key failed xml_key]:", xml_key)
 
