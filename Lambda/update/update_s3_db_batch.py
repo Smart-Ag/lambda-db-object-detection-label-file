@@ -117,33 +117,36 @@ def create_anno_db_entries(bucket_name, key="", secret=""):
                 if count % 1000 == 0:
                     print("Finished another set for prefix=", full_prefix)
                     count = 0
+                try:
+                    xml_path_split = xml_key.split('/')
+                    og_filename = xml_path_split[-1]
 
-                xml_path_split = xml_key.split('/')
-                og_filename = xml_path_split[-1]
+                    dest_path_key_lbl, dest_path_key_anno = helpers.get_anno_lbl_db_path(
+                        og_filename,
+                        year,
+                        log=False)
+                    db_anno_exists = helpers.file_exists_s3_on_prem(
+                        s3,
+                        bucket_name,
+                        dest_path_key_anno)
 
-                dest_path_key_lbl, dest_path_key_anno = helpers.get_anno_lbl_db_path(
-                    og_filename,
-                    year,
-                    log=False)
-                db_anno_exists = helpers.file_exists_s3_on_prem(
-                    s3,
-                    bucket_name,
-                    dest_path_key_anno)
+                    if not db_anno_exists:
+                        print('\n\n--------------------------------------------------')
+                        num_files_missing += 1
+                        print("Found missing anno xml_key={0}, db_addr={1}".format(
+                            xml_key, dest_path_key_anno))
+                        print("num_files_missing=", num_files_missing)
 
-                if not db_anno_exists:
-                    print('\n\n--------------------------------------------------')
-                    num_files_missing += 1
-                    print("Found missing anno xml_key={0}, db_addr={1}"
-                          .format(xml_key, dest_path_key_anno))
-                    print("num_files_missing=", num_files_missing)
-
-                    helpers.create_db_entry(
-                        op_year=year,
-                        src_bucket=bucket_name,
-                        src_path_key=xml_key,
-                        og_filename=og_filename,
-                        s3=s3_alt)
-                    print('--------------------------------------------------\n\n')
+                        helpers.create_db_entry(
+                            op_year=year,
+                            src_bucket=bucket_name,
+                            src_path_key=xml_key,
+                            og_filename=og_filename,
+                            s3=s3_alt)
+                        print('--------------------------------------------------\n\n')
+                except Exception as e:
+                    print("Failed with:", e)
+                    print("[xml_key failed xml_key]:", xml_key)
 
     return num_files_missing
 
