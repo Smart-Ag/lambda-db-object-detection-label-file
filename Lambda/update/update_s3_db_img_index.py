@@ -6,16 +6,16 @@ import update.helpers as helpers
 
 
 def lambda_handler(event, context):
-
-    boto3.setup_default_session(region_name='us-east-1')
-    # print("event: ", event)
-
-    # Get the object from the event and show its content type
-    TEMP_IMG_PATH = '/tmp/output-img.csv'
-    src_bucket = event['Records'][0]['s3']['bucket']['name']
-    src_path_key = urllib.parse.unquote_plus(
-        event['Records'][0]['s3']['object']['key'], encoding='utf-8')
     try:
+        boto3.setup_default_session(region_name='us-east-1')
+        # print("event: ", event)
+
+        # Get the object from the event and show its content type
+        TEMP_IMG_PATH = '/tmp/output-img.csv'
+        src_bucket = event['Records'][0]['s3']['bucket']['name']
+        src_path_key = urllib.parse.unquote_plus(
+            event['Records'][0]['s3']['object']['key'], encoding='utf-8')
+
         og_filename = str(src_path_key.split('/')[-1])
         op_year = str(src_path_key.split('/')[0])
         dest_path_key = 'object_detection_img_file_' + str(op_year)
@@ -39,9 +39,10 @@ def lambda_handler(event, context):
     except Exception as e:
         print(e)
         print(
-            'Error getting object {} from bucket {}. \
+            '[Error]: getting object {} from bucket {}. \
                 Make sure they exist and your bucket is in the same region as this function.'
             .format(
                 src_path_key,
                 src_bucket))
+        print("[Error]: event:", event)
         raise e
