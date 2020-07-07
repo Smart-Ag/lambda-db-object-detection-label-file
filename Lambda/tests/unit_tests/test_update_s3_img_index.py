@@ -57,7 +57,7 @@ def test_lambda_handler():
     s3_client.create_bucket(Bucket=BUCKET_NAME)
     helpers.upload_to_s3(TEMP_ANNO_PATH, BUCKET_NAME, SRC_KEY)
 
-    IMG_INDEX_FILE_KEY = f'database/object_detection_img_file_2019/' + \
+    IMG_INDEX_FILE_KEY = 'database/object_detection_img_file_2019/' + \
         '0242ac120002-detection-1564068022219-1.jpeg.csv'
 
     assert not helpers.file_exists_s3(

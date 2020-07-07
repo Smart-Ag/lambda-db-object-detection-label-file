@@ -59,7 +59,7 @@ def test_lambda_handler():
     s3_client.create_bucket(Bucket=BUCKET_NAME)
     helpers.upload_to_s3(TEMP_ANNO_PATH, BUCKET_NAME, SRC_KEY)
 
-    ANNO_FILE_KEY = f'database/anno/object_detection_label_file_2019/' + \
+    ANNO_FILE_KEY = 'database/anno/object_detection_label_file_2019/' + \
         '0242ac120002-detection-1564068022219-1.jpeg.xml.csv'
     LBL_FILE_KEY = 'database/lbl/object_detection_label_file_item_2019/' + \
         '0242ac120002-detection-1564068022219-1.jpeg.xml.csv'
